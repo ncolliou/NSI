@@ -48,6 +48,9 @@ while running:
         else:
             game.player.dont_play = False
 
+    elif game.actual == "pause":
+        print("pause")
+
     elif game.actual == "menu":
         # background du menu
         game.draw_background(screen)
@@ -89,8 +92,14 @@ while running:
                     game.show_position = False
                 else:
                     game.show_position = True
+            if game.actual == "pause":
+                if event.key == pygame.K_ESCAPE:
+                    print("play")
+                    game.actual = "playing"
             # si on est entrain de jouer et qu'on ouvre l'inventaire (e)
             if game.actual == "playing":
+                if event.key == pygame.K_ESCAPE and not game.open_inventory:
+                    game.actual = "pause"
                 if event.key == pygame.K_e:
                     if not game.open_inventory:
                         game.open_inventory = True

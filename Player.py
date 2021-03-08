@@ -77,10 +77,18 @@ class Player:
         for tile in self.game.visible_map:
             if tile.have_hitbox:
                 # x direction
-                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk()*10*TILE_SIZE + self.game.world.decalagex, tile.get_rect().y, tile.get_rect().w, tile.get_rect().h).colliderect(self.rect.x - dx, self.rect.y, self.width, self.height):
+                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk()*10*TILE_SIZE + self.game.world.decalagex,
+                                    tile.get_rect().y,
+                                    tile.get_rect().w,
+                                    tile.get_rect().h)\
+                        .colliderect(self.rect.x - dx, self.rect.y, self.width, self.height):
                     dx = 0
                 # y direction
-                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk()*10*TILE_SIZE + self.game.world.decalagex, tile.get_rect().y, tile.get_rect().w, tile.get_rect().h).colliderect(self.rect.x, self.rect.y - dy, self.width, self.height):
+                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk()*10*TILE_SIZE + self.game.world.decalagex,
+                                    tile.get_rect().y,
+                                    tile.get_rect().w,
+                                    tile.get_rect().h)\
+                        .colliderect(self.rect.x, self.rect.y - dy, self.width, self.height):
                     # en dessous du sol
                     if self.vel_y < 0:
                         dy = self.rect.top - tile.get_rect().bottom
@@ -120,7 +128,8 @@ class Player:
                     else:
                         screen.blit(self.game.world.blocks_img[key], self.inventory[key][1:])
                     # afficher le nombre de blocks
-                    self.draw_text(screen, str(self.inventory[key][0]), (255, 255, 255), self.inventory[key][1]+26, self.inventory[key][2]+27, 20)
+                    self.draw_text(screen, str(self.inventory[key][0]), (255, 255, 255), self.inventory[key][1]+26,
+                                   self.inventory[key][2]+27, 20)
                     # augmenter le compteur pour que chaque image ne soit pas sur la precedente 294-320 541-568
                     i += 1
 
