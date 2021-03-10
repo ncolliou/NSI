@@ -1,5 +1,7 @@
 import pygame
 import random
+
+from Text import Text
 from Player import Player
 from Sound import SoundManager
 from World import World
@@ -54,8 +56,6 @@ class Game:
         self.actual = "menu"
 
         # affichages
-        # hitboxes
-        self.show_hitboxes = False
         # position du joueur
         self.show_position = False
         # inventaire
@@ -74,6 +74,12 @@ class Game:
         self.soundManager = SoundManager()
         # self.soundManager.play('music', -1)
 
+        self.user_text = ''
+
+        self.running = True
+
+        self.key_pressed = pygame.key.get_pressed()
+
     def update(self, screen):
         """
         Method qui update l'ecran
@@ -91,6 +97,7 @@ class Game:
         self.player.select_hotbar_rect.x = 302 + 53 * (self.hotbar_num - 1)
         self.player.select_hotbar_rect.y = 661
         screen.blit(self.player.select_hotbar, self.player.select_hotbar_rect)
+        Text(self.user_text, (0, 0, 0), 100, 100).draw(screen)
 
     def update_menu(self, screen):
         """
@@ -99,12 +106,21 @@ class Game:
         self.play_button.draw(screen)
         self.exit_button.draw(screen)
         self.option_button.draw(screen)
-        self.player.draw_text(screen, "Play", (255, 255, 255), self.play_button.rect.centerx - 20,
-                              self.play_button.rect.centery - 15)
-        self.player.draw_text(screen, "Exit", (255, 255, 255), self.exit_button.rect.centerx - 20,
-                              self.exit_button.rect.centery - 15)
-        self.player.draw_text(screen, "Options", (255, 255, 255), self.option_button.rect.centerx - 40,
-                              self.option_button.rect.centery - 15)
+        Text("Play", (255, 255, 255), self.play_button.rect.centerx - 20,
+             self.play_button.rect.centery - 15).draw(screen)
+        Text("Exit", (255, 255, 255), self.exit_button.rect.centerx - 20,
+             self.exit_button.rect.centery - 15).draw(screen)
+        Text("Options", (255, 255, 255), self.option_button.rect.centerx - 40,
+             self.option_button.rect.centery - 15).draw(screen)
+        # si le bouton play est clicker
+        if self.play_button.click():
+            self.actual = "playing"
+        # si le bouton exit est clicker
+        if self.exit_button.click():
+            self.running = False
+        # si le bouton options est clicker
+        if self.option_button.click():
+            self.actual = "options"
 
     def update_options(self, screen):
         """
@@ -116,12 +132,12 @@ class Game:
         self.return_game_button.draw(screen)
         self.option_button2.draw(screen)
         self.menu_button.draw(screen)
-        self.player.draw_text(screen, "Return Game", (255, 255, 255), self.return_game_button.rect.centerx - 60,
-                              self.return_game_button.rect.centery - 15)
-        self.player.draw_text(screen, "Options", (255, 255, 255), self.option_button2.rect.centerx - 40,
-                              self.option_button2.rect.centery - 15)
-        self.player.draw_text(screen, "Return Menu", (255, 255, 255), self.menu_button.rect.centerx - 60,
-                              self.menu_button.rect.centery - 15)
+        Text("Return Game", (255, 255, 255), self.return_game_button.rect.centerx - 60,
+             self.return_game_button.rect.centery - 15).draw(screen)
+        Text("Options", (255, 255, 255), self.option_button2.rect.centerx - 40,
+             self.option_button2.rect.centery - 15).draw(screen)
+        Text("Return Menu", (255, 255, 255), self.menu_button.rect.centerx - 60,
+             self.menu_button.rect.centery - 15).draw(screen)
         if self.return_game_button.click():
             self.actual = "playing"
         if self.option_button2.click():
@@ -148,3 +164,13 @@ class Game:
         Affiche le background
         """
         screen.blit(self.background, (0, 0))
+
+    def show_hitboxes(self, screen):
+        for tile in self.visible_map:
+            if tile.have_hitbox:
+                pygame.draw.rect(screen, (255, 255, 255),
+                                 (tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
+                                  tile.get_rect().y,
+                                  tile.get_rect().w,
+                                  tile.get_rect().h), 2)
+        pygame.draw.rect(screen, (255, 255, 255), self.player.rect, 2)

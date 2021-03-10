@@ -13,22 +13,15 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # initialisation du jeu
 game = Game()
 
-running = True
-
-while running:
+while game.running:
     # si l utilisateur joue
     if game.actual == "playing":
         # update tout
         game.update(screen)
-        # recuperation touches pressees
-        key = pygame.key.get_pressed()
         # si on appuie sur h (hitboxes)
-        if key[pygame.K_h]:
+        if game.key_pressed[pygame.K_h]:
             # affichage des hitboxes
-            for tile in game.visible_map:
-                if tile.have_hitbox:
-                    pygame.draw.rect(screen, (255, 255, 255), (tile.get_rect().x + tile.get_chunk()*10*TILE_SIZE + game.world.decalagex, tile.get_rect().y, tile.get_rect().w, tile.get_rect().h), 2)
-            pygame.draw.rect(screen, (255, 255, 255), game.player.rect, 2)
+            game.show_hitboxes(screen)
 
         # si on montre la position (F3)
         if game.show_position:
@@ -57,15 +50,7 @@ while running:
         game.draw_background(screen)
         # affichage des boutons
         game.update_menu(screen)
-        # si le bouton play est clicker
-        if game.play_button.click():
-            game.actual = "playing"
-        # si le bouton exit est clicker
-        if game.exit_button.click():
-            running = False
-        # si le bouton options est clicker
-        if game.option_button.click():
-            game.actual = "options"
+
     elif game.actual == "options":
         # affichage du background
         game.draw_background(screen)
@@ -87,6 +72,10 @@ while running:
     for event in pygame.event.get():
         # si une touche est appuyer
         if event.type == pygame.KEYDOWN:
+            if event.type == pygame.K_BACKSPACE:
+                game.user_text = game.user_text[:-1]
+            else:
+                game.user_text += event.unicode
             # si F3 est appuyer -> on montre la position si elle n'est pas deja afficher
             if event.key == pygame.K_F3 and game.actual == 'playing':
                 if game.show_position:
@@ -130,7 +119,8 @@ while running:
                 game.position = pygame.mouse.get_pos()
                 if game.player.move_items:
                     game.player.move_items = False
-                    # game.player.update_inv(game.player.k, game.player.inventory[game.player.k][0], game.position[0], game.position[1])
+                    # game.player.update_inv(game.player.k, game.player.inventory[game.player.k][0], game.position[0],
+                    # game.position[1])
                 elif not game.player.move_items:
                     game.player.move_items = True
                     for i in range(0, 9):
@@ -157,5 +147,5 @@ while running:
 
         # fermeture de la fenetre
         if event.type == pygame.QUIT:
-            running = False
+            game.running = False
             pygame.quit()

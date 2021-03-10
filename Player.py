@@ -1,12 +1,14 @@
 import pygame
 from const import SCREEN_WIDTH, SCREEN_HEIGHT, player_path_img, inventory_gui_path_img, hotbar_gui_path_img, \
-    select_gui_path_img, font_path, TILE_SIZE
+    select_gui_path_img, TILE_SIZE
+from Text import Text
 
 
 class Player:
     """
     Class qui initialise le joueur
     """
+
     def __init__(self, game):
         self.game = game
         # chargement de l'image
@@ -33,7 +35,7 @@ class Player:
         self.inventory_img = pygame.image.load(inventory_gui_path_img)
         self.hotbar_img = pygame.image.load(hotbar_gui_path_img)
         self.hotbar_img_rect = self.hotbar_img.get_rect()
-        self.hotbar_img_rect.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT-33)
+        self.hotbar_img_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 33)
         self.select_hotbar = pygame.image.load(select_gui_path_img)
         self.select_hotbar_rect = self.select_hotbar.get_rect()
 
@@ -77,17 +79,17 @@ class Player:
         for tile in self.game.visible_map:
             if tile.have_hitbox:
                 # x direction
-                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk()*10*TILE_SIZE + self.game.world.decalagex,
+                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
                                     tile.get_rect().y,
                                     tile.get_rect().w,
-                                    tile.get_rect().h)\
+                                    tile.get_rect().h) \
                         .colliderect(self.rect.x - dx, self.rect.y, self.width, self.height):
                     dx = 0
                 # y direction
-                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk()*10*TILE_SIZE + self.game.world.decalagex,
+                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
                                     tile.get_rect().y,
                                     tile.get_rect().w,
-                                    tile.get_rect().h)\
+                                    tile.get_rect().h) \
                         .colliderect(self.rect.x, self.rect.y - dy, self.width, self.height):
                     # en dessous du sol
                     if self.vel_y < 0:
@@ -128,8 +130,9 @@ class Player:
                     else:
                         screen.blit(self.game.world.blocks_img[key], self.inventory[key][1:])
                     # afficher le nombre de blocks
-                    self.draw_text(screen, str(self.inventory[key][0]), (255, 255, 255), self.inventory[key][1]+26,
-                                   self.inventory[key][2]+27, 20)
+                    text_nb_blocks = Text(str(self.inventory[key][0]), (255, 255, 255), self.inventory[key][1] + 26,
+                                          self.inventory[key][2] + 27, 20)
+                    text_nb_blocks.draw(screen)
                     # augmenter le compteur pour que chaque image ne soit pas sur la precedente 294-320 541-568
                     i += 1
 
@@ -142,23 +145,10 @@ class Player:
             i = 0
         for key, value in self.inventory.items():
             if not value == 0:
-                screen.blit(self.game.world.blocks_img[key], (309 + 14 * i + 39*i, 668))
-                self.draw_text(screen, str(self.inventory[key][0]), (255, 255, 255), 335 + 14*i+39*i, 695, 20)
+                screen.blit(self.game.world.blocks_img[key], (309 + 14 * i + 39 * i, 668))
+                text_num_items = Text(str(self.inventory[key][0]), (255, 255, 255), 335 + 53 * i, 695, 20)
+                text_num_items.draw(screen)
                 i += 1
 
     def update_inv(self, name, count, x, y):
         self.inventory[name] = [count, x, y]
-
-    # noinspection PyMethodMayBeStatic
-    # ne pas chercher a comprendre c'est juste sur PyCharm
-    def draw_text(self, screen, text, text_color, x, y, size=30):
-        """
-        Dessine du texte
-        """
-        # initialisation de la police et de la taille
-        font = pygame.font.Font(font_path, size)
-        # application du texte et de la couleur
-        # a noter que la methode render fonction comme pour une image avec le texte
-        text = font.render(text, True, text_color)
-        # afficher le texte
-        screen.blit(text, (x, y))
