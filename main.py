@@ -56,9 +56,8 @@ while game.running:
         game.draw_background(screen)
         # affichage des elements dans le menu options
         game.update_options(screen)
-        # si le bouton back est appuyer
-        if game.back_button.click():
-            game.actual = "menu"
+    elif game.actual == "options_musique":
+        game.draw_background(screen)
 
     # mise à jour de l'ecran
     pygame.display.flip()
@@ -72,10 +71,10 @@ while game.running:
     for event in pygame.event.get():
         # si une touche est appuyer
         if event.type == pygame.KEYDOWN:
-            if event.type == pygame.K_BACKSPACE:
-                game.user_text = game.user_text[:-1]
-            else:
-                game.user_text += event.unicode
+            #     if event.type == pygame.K_BACKSPACE:
+            #         game.user_text = game.user_text[:-1]
+            #     else:
+            #         game.user_text += event.unicode
             # si F3 est appuyer -> on montre la position si elle n'est pas deja afficher
             if event.key == pygame.K_F3 and game.actual == 'playing':
                 if game.show_position:

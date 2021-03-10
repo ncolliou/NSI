@@ -43,7 +43,9 @@ class Game:
         self.play_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100, button_path_img, True)
         self.exit_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100, button_path_img, True)
         self.option_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, button_path_img, True)
-        self.back_button = Button(100, 100, button_path_img, True)
+        self.back_button = Button(SCREEN_WIDTH // 2, 650, button_path_img, True)
+        self.control_opt_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3, button_path_img, True)
+        self.music_opt_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3 + SCREEN_HEIGHT // 4, button_path_img, True)
         self.return_game_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100, button_path_img, True)
         self.option_button2 = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, button_path_img, True)
         self.menu_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100, button_path_img, True)
@@ -127,6 +129,20 @@ class Game:
         Method qui update les options
         """
         self.back_button.draw(screen)
+        self.control_opt_button.draw(screen)
+        self.music_opt_button.draw(screen)
+        Text("Controls", (255, 255, 255), self.control_opt_button.rect.centerx - 20,
+             self.control_opt_button.rect.centery - 15).draw(screen)
+        Text("Musique", (255, 255, 255), self.music_opt_button.rect.centerx - 20,
+             self.music_opt_button.rect.centery - 15).draw(screen)
+        Text("Back", (255, 255, 255), self.back_button.rect.centerx - 20,
+             self.back_button.rect.centery - 15).draw(screen)
+
+        # si le bouton back est appuyer
+        if self.back_button.click():
+            self.actual = "menu"
+        if self.music_opt_button.click():
+            self.actual = "options_musique"
 
     def update_pause(self, screen):
         self.return_game_button.draw(screen)
