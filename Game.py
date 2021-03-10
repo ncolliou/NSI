@@ -42,6 +42,9 @@ class Game:
         self.exit_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100, button_path_img, True)
         self.option_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, button_path_img, True)
         self.back_button = Button(100, 100, button_path_img, True)
+        self.return_game_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100, button_path_img, True)
+        self.option_button2 = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, button_path_img, True)
+        self.menu_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100, button_path_img, True)
 
         # position
         self.x = 0
@@ -109,6 +112,23 @@ class Game:
         """
         self.back_button.draw(screen)
 
+    def update_pause(self, screen):
+        self.return_game_button.draw(screen)
+        self.option_button2.draw(screen)
+        self.menu_button.draw(screen)
+        self.player.draw_text(screen, "Return Game", (255, 255, 255), self.return_game_button.rect.centerx - 60,
+                              self.return_game_button.rect.centery - 15)
+        self.player.draw_text(screen, "Options", (255, 255, 255), self.option_button2.rect.centerx - 40,
+                              self.option_button2.rect.centery - 15)
+        self.player.draw_text(screen, "Return Menu", (255, 255, 255), self.menu_button.rect.centerx - 60,
+                              self.menu_button.rect.centery - 15)
+        if self.return_game_button.click():
+            self.actual = "playing"
+        if self.option_button2.click():
+            self.actual = "options"
+        if self.menu_button.click():
+            self.actual = "menu"
+
     def set_visible_map(self):
         """
         Liste des blocks visible sur l'ecran
@@ -116,7 +136,11 @@ class Game:
         self.visible_map.clear()
         for tile in self.world.tile_list:
             if not (
-                    tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.world.decalagex > 1080 or tile.get_rect().x + TILE_SIZE + tile.get_chunk() * 10 * TILE_SIZE + self.world.decalagex < 0 or tile.get_rect().y > 720 or tile.get_rect().y + TILE_SIZE < 0):
+                    tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.world.decalagex > 1080
+                    or
+                    tile.get_rect().x + TILE_SIZE + tile.get_chunk() * 10 * TILE_SIZE + self.world.decalagex < 0
+                    or
+                    tile.get_rect().y > 720 or tile.get_rect().y + TILE_SIZE < 0):
                 self.visible_map.append(tile)
 
     def draw_background(self, screen):

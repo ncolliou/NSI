@@ -58,7 +58,7 @@ class Player:
             if not key[pygame.K_SPACE]:
                 self.jumped = False
             if key[pygame.K_LCTRL]:
-                self.velocity = 10
+                self.velocity = 6
             # deplacement sur la gauche
             if key[pygame.K_q]:
                 dx += self.velocity
