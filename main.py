@@ -58,6 +58,7 @@ while game.running:
         game.update_options(screen)
     elif game.actual == "options_musique":
         game.draw_background(screen)
+        game.update_options_music(screen)
 
     # mise à jour de l'ecran
     pygame.display.flip()
@@ -69,12 +70,17 @@ while game.running:
 
     # events
     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if game.input_rect.collidepoint(event.pos):
+                if game.active:
+                    game.active = False
+                    game.color = game.color_passive
+                else:
+                    game.active = True
+                    game.color = game.color_active
         # si une touche est appuyer
         if event.type == pygame.KEYDOWN:
-            #     if event.type == pygame.K_BACKSPACE:
-            #         game.user_text = game.user_text[:-1]
-            #     else:
-            #         game.user_text += event.unicode
+            game.key_write(event)
             # si F3 est appuyer -> on montre la position si elle n'est pas deja afficher
             if event.key == pygame.K_F3 and game.actual == 'playing':
                 if game.show_position:

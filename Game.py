@@ -49,6 +49,7 @@ class Game:
         self.return_game_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100, button_path_img, True)
         self.option_button2 = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, button_path_img, True)
         self.menu_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100, button_path_img, True)
+        self.return_options_music_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 200, button_path_img, True)
 
         # position
         self.x = 0
@@ -74,13 +75,20 @@ class Game:
 
         # sounds
         self.soundManager = SoundManager()
-        # self.soundManager.play('music', -1)
+        self.soundManager.play('music', -1)
 
         self.user_text = ''
 
         self.running = True
 
         self.key_pressed = pygame.key.get_pressed()
+
+        self.volume_back_music = str(self.soundManager.sounds['music'].get_volume())
+        self.input_rect = pygame.Rect(100, 100, 50, 30)
+        self.color_active = pygame.Color('lightskyblue3')
+        self.color_passive = pygame.Color('gray15')
+        self.color = self.color_passive
+        self.active = False
 
     def update(self, screen):
         """
@@ -144,6 +152,15 @@ class Game:
         if self.music_opt_button.click():
             self.actual = "options_musique"
 
+    def update_options_music(self, screen):
+        self.return_options_music_button.draw(screen)
+        if self.return_options_music_button.click():
+            self.actual = "options"
+        Text("Back", (255, 255, 255), self.return_options_music_button.rect.centerx - 20,
+             self.return_options_music_button.rect.centery - 15).draw(screen)
+        pygame.draw.rect(screen, self.color, self.input_rect, 2)
+        Text(self.volume_back_music, (255, 255, 255), 100, 100).draw(screen)
+
     def update_pause(self, screen):
         self.return_game_button.draw(screen)
         self.option_button2.draw(screen)
@@ -190,3 +207,13 @@ class Game:
                                   tile.get_rect().w,
                                   tile.get_rect().h), 2)
         pygame.draw.rect(screen, (255, 255, 255), self.player.rect, 2)
+
+    def key_write(self, event):
+        if self.active:
+            if event.key == pygame.K_BACKSPACE:
+                self.volume_back_music = self.volume_back_music[:-1]
+            elif event.key == pygame.K_RETURN:
+                self.soundManager.set_vol(float(self.volume_back_music), 'music')
+            else:
+                self.volume_back_music += event.unicode
+
