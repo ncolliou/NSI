@@ -64,13 +64,10 @@ class Game:
         # inventaire
         self.open_inventory = False
 
-        self.right_click = False
-
         # inventaire
         self.inventory = []
 
         self.hotbar_num = 1
-        self.move = False
         self.position = None
 
         # sounds

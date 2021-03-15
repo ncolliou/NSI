@@ -156,9 +156,3 @@ class Block:
                 self.world.game.player.inventory[key].item = Item(self.name, self.world.blocks_img[self.name])
                 self.world.game.player.inventory[key].count = 1
                 return
-        # si le block n'a jamais ete dans l'inventaire
-        # taille = len(self.world.game.player.inventory)
-        # if self.name not in self.world.game.player.inventory.keys():
-        #     self.world.game.player.update_inv(self.name, 0, 294 + 14 * taille + 39 * taille, 538)
-        # # ajout du block dans l'inventaire
-        # self.world.game.player.inventory[self.name][0] = self.world.game.player.inventory[self.name][0] + 1
