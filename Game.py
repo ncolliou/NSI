@@ -39,7 +39,7 @@ class Game:
         # liste qui contient tous les blocks visible sur l'ecran
         self.visible_map = []
 
-        # creation de bouton pour les menus
+        # creation de boutons pour les menus
         self.play_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100, button_path_img, True)
         self.exit_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100, button_path_img, True)
         self.option_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, button_path_img, True)
@@ -95,9 +95,10 @@ class Game:
         Method qui update l'ecran
         """
         # affichage du background
+        self.key_pressed = pygame.key.get_pressed()
         self.draw_background(screen)
         self.world.draw(screen)
-        self.player.update()
+        self.player.update(screen)
         self.player.inventory_update(screen)
         screen.blit(self.player.hotbar_img, self.player.hotbar_img_rect)
         self.player.hotbar_update(screen)
@@ -216,4 +217,3 @@ class Game:
                 self.soundManager.set_vol(float(self.volume_back_music), 'music')
             else:
                 self.volume_back_music += event.unicode
-

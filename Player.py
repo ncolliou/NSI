@@ -1,7 +1,7 @@
 import pygame
 from const import SCREEN_WIDTH, SCREEN_HEIGHT, player_path_img, inventory_gui_path_img, hotbar_gui_path_img, \
     select_gui_path_img, TILE_SIZE
-from Text import Text
+from Slot import Slot
 
 
 class Player:
@@ -41,7 +41,13 @@ class Player:
 
         self.move_items = False
 
-    def update(self):
+        # l = [4, 1, 2, 3]
+        for j in [4, 1, 2, 3]:
+            for i in range(1, 10):
+                self.inventory["Slot"+str(i)+"_"+str(j)] = Slot(None, i, j, 0)
+        self.move_items = [False, None]
+
+    def update(self, screen):
         """
         Method qui update la position du joueur (le monde bouge pour que le joueur soit toujours au centre de l'ecran)
         """
@@ -108,47 +114,76 @@ class Player:
         for tile in self.game.world.tile_list:
             tile.get_rect().y += dy
 
+        if self.game.open_inventory:
+            for key, value in self.inventory.items():
+                if value.click():
+                    print(key)
+                    if value.item is not None:
+                        if not self.move_items[0]:
+                            print(key)
+                            self.move_items = [True, value, key]
+                    if value.item is None and self.move_items[0]:
+                        value.item = self.move_items[1].item
+                        value.count = self.move_items[1].count
+                        self.inventory[self.move_items[2]] = Slot(None, self.move_items[1].pos_x, self.move_items[1].pos_y, 0)
+                        self.move_items = [False, None, None]
+                        self.inventory_update(screen)
+                # pos = pygame.mouse.get_pos()
+                # self.move_items[1].pos_x, self.move_items[1].pos_y = pos[0]-23, pos[1]-23
+                # self.move_items[1].draw_item(screen)
+                # self.move_items[1].draw_count(screen)
+
     def inventory_update(self, screen):
         """
-        Update l'inventaire du joueur et affichage de celui ci avec uniquement s'il y a des blocks
+        Update l'inventaire du joueur et affichage de celui ci
         """
-        # reset i et j
-        i = 0
-        j = 0
-        if self.game.open_inventory:
-            if i == 9:
-                i = 0
-                j += 1
-            if j == 3:
-                j = 0
-            for key, value in self.inventory.items():
-                # s'il y a au moins un block dans le dictionnaire
-                if not value == 0:
-                    # afficher le block
-                    if j >= 1:
-                        screen.blit(self.game.world.blocks_img[key], self.inventory[key][1:])
-                    else:
-                        screen.blit(self.game.world.blocks_img[key], self.inventory[key][1:])
-                    # afficher le nombre de blocks
-                    text_nb_blocks = Text(str(self.inventory[key][0]), (255, 255, 255), self.inventory[key][1] + 26,
-                                          self.inventory[key][2] + 27, 20)
-                    text_nb_blocks.draw(screen)
-                    # augmenter le compteur pour que chaque image ne soit pas sur la precedente 294-320 541-568
-                    i += 1
 
-            # if self.move_items:
-            #     screen.blit(self.game.world.blocks_img[self.k], (pygame.mouse.get_pos()))
+        if self.game.open_inventory:
+            for value in self.inventory.values():
+                value.draw_item(screen)
+                value.draw_count(screen)
+
+        # # reset i et j
+        # i = 0
+        # j = 0
+        # if self.game.open_inventory:
+        #     if i == 9:
+        #         i = 0
+        #         j += 1
+        #     if j == 3:
+        #         j = 0
+        #     for key, value in self.inventory.items():
+        #         # s'il y a au moins un block dans le dictionnaire
+        #         if not value == 0:
+        #             # afficher le block
+        #             if j >= 1:
+        #                 screen.blit(self.game.world.blocks_img[key], self.inventory[key][1:])
+        #             else:
+        #                 screen.blit(self.game.world.blocks_img[key], self.inventory[key][1:])
+        #             # afficher le nombre de blocks
+        #             text_nb_blocks = Text(str(self.inventory[key][0]), (255, 255, 255), self.inventory[key][1] + 26,
+        #                                   self.inventory[key][2] + 27, 20)
+        #             text_nb_blocks.draw(screen)
+        #             # augmenter le compteur pour que chaque image ne soit pas sur la precedente 294-320 541-568
+        #             i += 1
+        #
+        #     # if self.move_items:
+        #     #     screen.blit(self.game.world.blocks_img[self.k], (pygame.mouse.get_pos()))
 
     def hotbar_update(self, screen):
-        i = 0
-        if i == 9:
-            i = 0
-        for key, value in self.inventory.items():
-            if not value == 0:
-                screen.blit(self.game.world.blocks_img[key], (309 + 14 * i + 39 * i, 668))
-                text_num_items = Text(str(self.inventory[key][0]), (255, 255, 255), 335 + 53 * i, 695, 20)
-                text_num_items.draw(screen)
-                i += 1
-
-    def update_inv(self, name, count, x, y):
-        self.inventory[name] = [count, x, y]
+        for value in self.inventory.values():
+            if value.pos_y == 540:
+                value.draw_item(screen, True)
+                value.draw_count(screen, True)
+        # i = 0
+        # if i == 9:
+        #     i = 0
+        # for key, value in self.inventory.items():
+        #     if not value == 0:
+        #         screen.blit(self.game.world.blocks_img[key], (309 + 14 * i + 39 * i, 668))
+        #         text_num_items = Text(str(self.inventory[key][0]), (255, 255, 255), 335 + 53 * i, 695, 20)
+        #         text_num_items.draw(screen)
+        #         i += 1
+    #
+    # def update_inv(self, name, count, x, y):
+    #     self.inventory[name] = [count, x, y]

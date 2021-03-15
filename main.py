@@ -119,36 +119,36 @@ while game.running:
                 elif event.key == pygame.K_9 and game.hotbar_num != 9:
                     game.hotbar_num = 9
 
-        if game.actual == "playing" and game.open_inventory:
-            if event.type == pygame.MOUSEBUTTONUP:
-                game.position = pygame.mouse.get_pos()
-                if game.player.move_items:
-                    game.player.move_items = False
-                    # game.player.update_inv(game.player.k, game.player.inventory[game.player.k][0], game.position[0],
-                    # game.position[1])
-                elif not game.player.move_items:
-                    game.player.move_items = True
-                    for i in range(0, 9):
-                        for j in range(0, 4):
-                            if j == 3:
-                                if 291 + 14 * i + 39 * i < game.position[0] < 336 + 14 * i + 39 * i and 538 < \
-                                        game.position[1] < 583:
-                                    print(i, j)
-                                    for key, value in game.player.inventory.items():
-                                        if value[1] == 294 + 14 * i + 39 * i and value[2] == 538:
-                                            while game.player.move_items:
-                                                print("test")
-                                                game.player.inventory[key][1:] = pygame.mouse.get_pos()
-                                                if event.type == pygame.MOUSEBUTTONUP:
-                                                    game.player.move_items = False
-                            else:
-                                if 291 + 14 * i + 39 * i < game.position[0] < 336 + 14 * i + 39 * i and \
-                                        363 + 14 * j + 39 * j < game.position[1] < 410 + 14 * j + 39 * j:
-                                    print(i, j)
+        # if game.actual == "playing" and game.open_inventory:
+        #     if event.type == pygame.MOUSEBUTTONUP:
+        #         game.position = pygame.mouse.get_pos()
+        #         if game.player.move_items:
+        #             game.player.move_items = False
+        #             # game.player.update_inv(game.player.k, game.player.inventory[game.player.k][0], game.position[0],
+        #             # game.position[1])
+        #         elif not game.player.move_items:
+        #             game.player.move_items = True
+        #             for i in range(0, 9):
+        #                 for j in range(0, 4):
+        #                     if j == 3:
+        #                         if 291 + 14 * i + 39 * i < game.position[0] < 336 + 14 * i + 39 * i and 538 < \
+        #                                 game.position[1] < 583:
+        #                             print(i, j)
+        #                             for key, value in game.player.inventory.items():
+        #                                 if value[1] == 294 + 14 * i + 39 * i and value[2] == 538:
+        #                                     while game.player.move_items:
+        #                                         print("test")
+        #                                         game.player.inventory[key][1:] = pygame.mouse.get_pos()
+        #                                         if event.type == pygame.MOUSEBUTTONUP:
+        #                                             game.player.move_items = False
+        #                     else:
+        #                         if 291 + 14 * i + 39 * i < game.position[0] < 336 + 14 * i + 39 * i and \
+        #                                 363 + 14 * j + 39 * j < game.position[1] < 410 + 14 * j + 39 * j:
+        #                             print(i, j)
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == pygame.BUTTON_RIGHT:
-                game.right_click = True
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        #     if event.button == pygame.BUTTON_RIGHT:
+        #         game.right_click = True
 
         # fermeture de la fenetre
         if event.type == pygame.QUIT:
