@@ -125,7 +125,7 @@ class Player:
                     if value.item is None and self.move_items[0]:
                         value.item = self.move_items[1].item
                         value.count = self.move_items[1].count
-                        self.inventory[self.move_items[2]] = Slot(None, self.move_items[1].pos_x, self.move_items[1].pos_y, 0)
+                        self.inventory[self.move_items[2]] = Slot(None, int(self.move_items[2][4]), int(self.move_items[2][6]), 0)
                         self.move_items = [False, None, None]
                         self.inventory_update(screen)
                 # pos = pygame.mouse.get_pos()
