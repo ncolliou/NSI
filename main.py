@@ -1,6 +1,7 @@
 import pygame
 from Game import Game
 from const import PROJECT_NAME, SCREEN_HEIGHT, SCREEN_WIDTH, FPS, TILE_SIZE
+from Text import Text
 
 pygame.init()
 # creation du clock pour fixer les fps
@@ -25,8 +26,8 @@ while game.running:
 
         # si on montre la position (F3)
         if game.show_position:
-            game.player.draw_text(screen, "X: " + str(int(game.x / TILE_SIZE)), (255, 255, 255), 900, 10)
-            game.player.draw_text(screen, "Y: " + str(int(game.y / TILE_SIZE)), (255, 255, 255), 900, 30)
+            Text("X: " + str(int(game.x / TILE_SIZE)), (255, 255, 255), 900, 10).draw(screen)
+            Text("Y: " + str(int(game.y / TILE_SIZE)), (255, 255, 255), 900, 30).draw(screen)
 
         # si on montre l'inventaire (e)
         if game.open_inventory:

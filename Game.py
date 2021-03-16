@@ -21,7 +21,8 @@ class Game:
         # import de l'arriere plan
         self.background = pygame.image.load(background_path_img)
         # creation du joueur
-        self.seed = random.randint(1, 100)
+        self.seed = 100
+        # self.seed = random.randint(1, 100)
         # affichage de la seed pour avoir la meme map par exemple
         print(self.seed)
         self.player = Player(self)

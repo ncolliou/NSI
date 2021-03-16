@@ -18,6 +18,8 @@ bedrock_block_path_img = 'assets/blocks/bedrock.png'
 tallgrass_block_path_img = 'assets/blocks/tallgrass.png'
 coal_block_path_img = 'assets/blocks/coal_ore.png'
 
+cow_path_img = 'assets/entity/cow.png'
+
 button_path_img = 'assets/button.png'
 
 inventory_gui_path_img = 'assets/gui/inventory3.png'

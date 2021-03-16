@@ -23,7 +23,7 @@ class Button:
 
     def click(self):
         """
-        Method qui renvoie True si le bouton est clicke
+        Method qui renvoie True si le bouton est clicker
         """
         action = False
         # recuperation de la position de la souris

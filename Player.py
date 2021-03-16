@@ -44,7 +44,12 @@ class Player:
         # l = [4, 1, 2, 3]
         for j in [4, 1, 2, 3]:
             for i in range(1, 10):
-                self.inventory["Slot"+str(i)+"_"+str(j)] = Slot(None, i, j, 0)
+                self.inventory["Slot" + str(i) + "_" + str(j)] = Slot(None, i, j, 0)
+
+        for j in range(1, 3):
+            for i in range(1, 3):
+                self.inventory["Slot" + str(i) + "_" + str(j)] = Slot(None, i, j, 0, "craft_small")
+
         self.move_items = [False, None, None]
 
     def update(self, screen):
@@ -66,7 +71,7 @@ class Player:
             if not key[pygame.K_SPACE]:
                 self.jumped = False
             if key[pygame.K_LCTRL]:
-                self.velocity = 6
+                self.velocity = 7
             # deplacement sur la gauche
             if key[pygame.K_q]:
                 dx += self.velocity
@@ -85,12 +90,16 @@ class Player:
         for tile in self.game.visible_map:
             if tile.have_hitbox:
                 # x direction
-                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
-                                    tile.get_rect().y,
-                                    tile.get_rect().w,
-                                    tile.get_rect().h) \
+                while pygame.rect.Rect(
+                        tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
+                        tile.get_rect().y,
+                        tile.get_rect().w,
+                        tile.get_rect().h) \
                         .colliderect(self.rect.x - dx, self.rect.y, self.width, self.height):
-                    dx = 0
+                    if dx > 0:
+                        dx -= 1
+                    elif dx < 0:
+                        dx += 1
                 # y direction
                 if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
                                     tile.get_rect().y,
@@ -110,6 +119,7 @@ class Player:
         # update de la position
         self.game.x += dx
         self.game.y += dy
+        self.game.world.cow.set_pos(self.game.world.cow.pos_x, self.game.world.cow.pos_y + dy)
         self.game.world.update_position(dx)
         for tile in self.game.world.tile_list:
             tile.get_rect().y += dy
@@ -123,7 +133,10 @@ class Player:
                     if value.item is None and self.move_items[0]:
                         value.item = self.move_items[1].item
                         value.count = self.move_items[1].count
-                        self.inventory[self.move_items[2]] = Slot(None, int(self.move_items[2][4]), int(self.move_items[2][6]), 0)
+                        self.inventory[self.move_items[2]] = \
+                            Slot(None,
+                                 int(self.move_items[2][4]), int(self.move_items[2][6]),
+                                 0, self.move_items[1].where)
                         self.move_items = [False, None, None]
                         self.inventory_update(screen)
 

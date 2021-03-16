@@ -3,7 +3,8 @@ from aleatoire import random_number_int
 from Block import Block
 from const import TILE_SIZE, \
     grass_block_path_img, dirt_block_path_img, stone_block_path_img, log_block_path_img, leaves_block_path_img, \
-    bedrock_block_path_img, tallgrass_block_path_img, coal_block_path_img
+    bedrock_block_path_img, tallgrass_block_path_img, coal_block_path_img, cow_path_img
+from Entity import Entity
 
 
 class World:
@@ -36,6 +37,7 @@ class World:
             "coal": pygame.transform.scale(self.coal_img, (39, 39))
         }
         self.decalagex = 0
+        self.cow = Entity(self, "cow", 100, 900, pygame.image.load(cow_path_img), True)
 
     def create_random(self):
         """
@@ -44,10 +46,10 @@ class World:
         t = 0
         # pour chaque item de self.data
         for col_count in range(len(self.data)):
-            if random_number_int(5) and t > 7:
+            if random_number_int(5) and t > 6:
                 t = 0
                 # initialisation d'un arbre
-                self.init_tree(col_count)
+                self.tree(col_count)
             # le block du dessus est de la grass
             else:
                 t += 1
@@ -90,6 +92,8 @@ class World:
             if not self.game.player.dont_play:
                 tile.destroy()
                 tile.place()
+        self.cow.set_pos(self.decalagex, self.cow.pos_y)
+        self.cow.draw(screen)
 
     def update_position(self, x):
         """
@@ -100,7 +104,7 @@ class World:
         #     tile.get_rect().x += x
         #     tile.get_rect().y += y
 
-    def init_tree(self, col_count):
+    def tree(self, col_count):
         # tronc d'arbre
         for i in range(3):
             tile = Block(self, col_count // 10, "log", col_count % 10 * TILE_SIZE,

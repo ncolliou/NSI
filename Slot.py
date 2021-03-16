@@ -1,15 +1,21 @@
 import pygame
 from Text import Text
+from const import dirt_block_path_img
 
 
 class Slot:
-    def __init__(self, item, pos_x, pos_y, count):
+    def __init__(self, item, pos_x, pos_y, count, where="inv"):
         self.item = item
-        self.pos_x = 241 + 53 * pos_x
-        if pos_y == 4:
-            self.pos_y = 328 + pos_y*53
-        else:
-            self.pos_y = 315 + pos_y*53
+        self.where = where
+        if self.where == "inv":
+            self.pos_x = 241 + 53 * pos_x
+            if pos_y == 4:
+                self.pos_y = 328 + pos_y*53
+            else:
+                self.pos_y = 315 + pos_y*53
+        elif self.where == "craft_small":
+            self.pos_x = 506 + 53 * pos_x
+            self.pos_y = 128 + 53 * pos_y
         self.count = count
         self.rect = pygame.rect.Rect(self.pos_x, self.pos_y, 47, 47)
         self.clicked = False
@@ -26,10 +32,12 @@ class Slot:
     def draw_item(self, screen, hotbar=False):
         if self.item is None:
             return
-        if self.item is not None and not hotbar:
+        if self.item is not None and not hotbar and self.where == "inv":
             screen.blit(self.item.image, self.get_pos())
-        if self.item is not None and hotbar:
+        if self.item is not None and hotbar and self.where == "inv":
             screen.blit(self.item.image, (self.pos_x+14, self.pos_y+127))
+        if self.item is not None and self.where == "craft_small":
+            screen.blit(self.item.image, self.get_pos())
 
     def draw_count(self, screen, hotbar=False):
         if self.item is not None:

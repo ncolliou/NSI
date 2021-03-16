@@ -113,13 +113,14 @@ class Block:
         """
         A voir
         """
-        if self.world.game.right_click:
-            if pygame.rect.Rect(self.get_rect().x + self.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
-                                self.get_rect().y,
-                                self.get_rect().w,
-                                self.get_rect().h) \
-                    .collidepoint(pygame.mouse.get_pos()):
-                print("Not collide")
+        pass
+        # if self.world.game.right_click:
+        #     if pygame.rect.Rect(self.get_rect().x + self.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
+        #                         self.get_rect().y,
+        #                         self.get_rect().w,
+        #                         self.get_rect().h) \
+        #             .collidepoint(pygame.mouse.get_pos()):
+        #         print("Not collide")
 
     def get_block_above(self, x, y):
         """
@@ -153,6 +154,6 @@ class Block:
                 return
         for key, value in self.world.game.player.inventory.items():
             if value.item is None:
-                self.world.game.player.inventory[key].item = Item(self.name, self.world.blocks_img[self.name])
+                self.world.game.player.inventory[key].item = Item(self.world, self.name, self.world.blocks_img[self.name])
                 self.world.game.player.inventory[key].count = 1
                 return

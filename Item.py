@@ -1,5 +1,6 @@
 class Item:
-    def __init__(self, name, image):
+    def __init__(self, world, name, image):
+        self.world = world
         self.name = name
         self.image = image
 
