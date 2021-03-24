@@ -7,7 +7,7 @@ class Entity:
         self.name = name
         self.pos_x = pos_x
         self.pos_y = pos_y
-        self.image = pygame.transform.scale(image, (100, 100))
+        self.image = pygame.transform.scale(image, (90, 90))
         self.passive = passive
 
     def get_name(self):

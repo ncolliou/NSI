@@ -16,6 +16,9 @@ class Slot:
         elif self.where == "craft_small":
             self.pos_x = 506 + 53 * pos_x
             self.pos_y = 128 + 53 * pos_y
+        elif self.where == "result_craft_small":
+            self.pos_x = 702
+            self.pos_y = 210
         self.count = count
         self.rect = pygame.rect.Rect(self.pos_x, self.pos_y, 47, 47)
         self.clicked = False
@@ -32,12 +35,15 @@ class Slot:
     def draw_item(self, screen, hotbar=False):
         if self.item is None:
             return
-        if self.item is not None and not hotbar and self.where == "inv":
-            screen.blit(self.item.image, self.get_pos())
-        if self.item is not None and hotbar and self.where == "inv":
-            screen.blit(self.item.image, (self.pos_x+14, self.pos_y+127))
-        if self.item is not None and self.where == "craft_small":
-            screen.blit(self.item.image, self.get_pos())
+        else:
+            if not hotbar and self.where == "inv":
+                screen.blit(self.item.image, self.get_pos())
+            if hotbar and self.where == "inv":
+                screen.blit(self.item.image, (self.pos_x+14, self.pos_y+127))
+            if self.where == "craft_small":
+                screen.blit(self.item.image, self.get_pos())
+            if self.where == "result_craft_small":
+                screen.blit(self.item.image, self.get_pos())
 
     def draw_count(self, screen, hotbar=False):
         if self.item is not None:

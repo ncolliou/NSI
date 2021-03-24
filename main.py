@@ -2,6 +2,7 @@ import pygame
 from Game import Game
 from const import PROJECT_NAME, SCREEN_HEIGHT, SCREEN_WIDTH, FPS, TILE_SIZE
 from Text import Text
+from Item import Item
 
 pygame.init()
 # creation du clock pour fixer les fps
@@ -41,6 +42,13 @@ while game.running:
         else:
             game.player.dont_play = False
 
+        # if game.player.inventory["Slot1_1_Craft"].item is not None:
+        #     print(game.player.inventory["Slot1_1_Craft"].item.name)
+        if game.player.inventory["Slot1_1_Craft"].item is not None:
+            if game.player.inventory["Slot1_1_Craft"].item.name == "log":
+                game.player.inventory["Slot0_0_Craft"].item = Item(game.world, "log", game.world.blocks_img["log"], True)
+                game.player.inventory["Slot0_0_Craft"].count = 4
+
     elif game.actual == "pause":
         game.draw_background(screen)
         game.update_pause(screen)
@@ -69,6 +77,8 @@ while game.running:
     # events
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 3:
+                game.player.place_block(event.pos)
             if game.input_rect.collidepoint(event.pos):
                 if game.active:
                     game.active = False
@@ -95,7 +105,11 @@ while game.running:
                 if event.key == pygame.K_e:
                     if not game.open_inventory:
                         game.open_inventory = True
-                    else:
+                    elif game.open_inventory and \
+                            game.player.inventory["Slot1_1_Craft"].item is None and \
+                            game.player.inventory["Slot1_2_Craft"].item is None and \
+                            game.player.inventory["Slot2_1_Craft"].item is None and \
+                            game.player.inventory["Slot2_2_Craft"].item is None:
                         game.open_inventory = False
 
                 if event.key == pygame.K_1 and game.hotbar_num != 1:

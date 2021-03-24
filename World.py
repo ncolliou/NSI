@@ -5,6 +5,7 @@ from const import TILE_SIZE, \
     grass_block_path_img, dirt_block_path_img, stone_block_path_img, log_block_path_img, leaves_block_path_img, \
     bedrock_block_path_img, tallgrass_block_path_img, coal_block_path_img, cow_path_img
 from Entity import Entity
+from Text import Text
 
 
 class World:
@@ -14,7 +15,7 @@ class World:
 
     def __init__(self, data, game):
         # liste qui sauvegarde les blocks avec leurs positions
-        self.tile_list = []
+        self.tile_list = {}
         self.data = data
         self.game = game
         # chargements images
@@ -37,97 +38,141 @@ class World:
             "coal": pygame.transform.scale(self.coal_img, (39, 39))
         }
         self.decalagex = 0
-        self.cow = Entity(self, "cow", 100, 900, pygame.image.load(cow_path_img), True)
+        self.decalagey = 0
+        self.cow = Entity(self, "cow", 120, 480 + self.data[2] - 89, pygame.image.load(cow_path_img), True)
+        self.dec = -250
 
     def create_random(self):
         """
         Method qui cree la map avec la liste de nb genere aleatoirement
         """
         t = 0
+        # + 1 sinon le jeu plante ;)
+        # if self.data[8] > 0:
+        #     up = (self.data[8]*60 + 60)
+        # elif self.data[8] < 0:
+        #     up = + 1 # self.data[8] - 1
+        # else:
+        #     up = 0
+        up = 0
+        # up = abs(self.data[8]*(60)) + 2
+        # print(abs(self.data[8]*(60)) + 2)
+        # print(up)
         # pour chaque item de self.data
         for col_count in range(len(self.data)):
             if random_number_int(5) and t > 6:
                 t = 0
+                pass
                 # initialisation d'un arbre
-                self.tree(col_count)
+                # self.tree(col_count, up)
             # le block du dessus est de la grass
             else:
                 t += 1
-                tile = Block(self, col_count // 10, "grass", col_count % 10 * TILE_SIZE,
-                             self.data[col_count] * (-TILE_SIZE) + 1000, self.grass_img, 50, True)
-                self.tile_list.append(tile)
+                # print(self.data[col_count] * (-TILE_SIZE))
+                tile = Block(self, (self.dec + col_count) // 10, "grass", col_count % 10,
+                             self.data[col_count] + up, self.grass_img, 50, True)
+                self.tile_list[str(col_count % 10) + "_" + str(
+                    self.data[col_count]) + "_" + str((self.dec + col_count) // 10)] = tile
                 if random_number_int(40):
-                    tile = Block(self, col_count // 10, "tallgrass", col_count % 10 * TILE_SIZE,
-                                 self.data[col_count] * (-TILE_SIZE) - TILE_SIZE + 1000, self.tallgrass_img, 20, False)
-                    self.tile_list.append(tile)
+                    tile = Block(self, (self.dec + col_count) // 10, "tallgrass", col_count % 10,
+                                 self.data[col_count] + 1 + up, self.tallgrass_img, 20,
+                                 False)
+                    self.tile_list[str(col_count % 10) + "_" +
+                                   str(self.data[col_count] + 1) + "_" + str((self.dec + col_count) // 10)] = tile
             # on ajoute 3 blocks de dirt en dessous de la grass
-            for i in range(1, 4):
-                tile = Block(self, col_count // 10, "dirt", col_count % 10 * TILE_SIZE,
-                             self.data[col_count] * (-TILE_SIZE) + 1000 + TILE_SIZE * i, self.dirt_img, 50, True)
-                self.tile_list.append(tile)
+            for i in range(0, 3):
+                tile = Block(self, (self.dec + col_count) // 10, "dirt", col_count % 10,
+                             self.data[col_count] + up + (-1) - 1 * i, self.dirt_img, 50, True)
+                self.tile_list[str(col_count % 10) + "_" +
+                               str(self.data[col_count] + (-1) - 1 * i) + "_" + str(
+                    (self.dec + col_count) // 10)] = tile
 
-            tile = Block(self, col_count // 10, "bedrock", col_count % 10 * TILE_SIZE, TILE_SIZE * 20 + 1000,
+            tile = Block(self, (self.dec + col_count) // 10, "bedrock", col_count % 10,
+                         - 20 + up,
                          self.bedrock_img, -1, True)
-            self.tile_list.append(tile)
+            self.tile_list[
+                str(col_count % 10) + "_" + str(20) + "_" + str(
+                    (self.dec + col_count) // 10)] = tile
 
             # on ajouter 10 blocks de stone en dessous de la dirt
-            for i in range(4, 20 + self.data[col_count]):
+            for i in range(3, 19 + self.data[col_count]):
                 if random_number_int(10):
-                    tile = Block(self, col_count // 10, "coal", col_count % 10 * TILE_SIZE,
-                                 self.data[col_count] * (-TILE_SIZE) + 1000 + TILE_SIZE * i, self.coal_img, 150, True)
-                    self.tile_list.append(tile)
+                    tile = Block(self, (self.dec + col_count) // 10, "coal", col_count % 10,
+                                 self.data[col_count] + (-1) - 1 * i + up, self.coal_img, 150,
+                                 True)
+                    self.tile_list[str(col_count % 10) + "_" +
+                                   str(self.data[col_count] + (-1) - 1 * i) + "_" + str(
+                        (self.dec + col_count) // 10)] = tile
                 else:
-                    tile = Block(self, col_count // 10, "stone", col_count % 10 * TILE_SIZE,
-                                 self.data[col_count] * (-TILE_SIZE) + 1000 + TILE_SIZE * i, self.stone_img, 150, True)
-                    self.tile_list.append(tile)
+                    tile = Block(self, (self.dec + col_count) // 10, "stone", col_count % 10,
+                                 self.data[col_count] + up + (-1) - 1 * i, self.stone_img, 150,
+                                 True)
+                    self.tile_list[str(col_count % 10) + "_" +
+                                   str(self.data[col_count] + (-1) - 1 * i) + "_" + str(
+                        (self.dec + col_count) // 10)] = tile
 
     def draw(self, screen):
         """
         Method qui applique chaque block sur screen avec sa position sauf s'il est en dehors de l'ecran
         """
-        for tile in self.game.visible_map:
-            screen.blit(tile.image, (
-                tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.decalagex,
-                tile.get_rect().y))
+        for key, value in self.game.visible_map.items():
+            screen.blit(value.image, (
+                value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.decalagex,
+                value.get_rect().y * (-TILE_SIZE) + self.decalagey))
+            # Text(key, (255, 255, 255), value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.decalagex,
+            #      value.get_rect().y * (-TILE_SIZE) + self.decalagey, size=13).draw(screen)
+            # Text(str(value.get_rect().x + value.get_chunk() * 10 * TILE_SIZE + self.decalagex) + " " +
+            #      str(value.get_rect().y + self.decalagey) + " " + str(value.get_chunk()), (255, 255, 255), value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.decalagex,
+            #      value.get_rect().y * (-TILE_SIZE) + self.decalagey + 20, size=13).draw(screen)
             if not self.game.player.dont_play:
-                tile.destroy()
-                tile.place()
+                value.destroy()
         self.cow.set_pos(self.decalagex, self.cow.pos_y)
         self.cow.draw(screen)
 
-    def update_position(self, x):
+    def update_position(self, x, y):
         """
         Method qui change la position des blocks en x et y par rapport à sa position precedente
         """
         self.decalagex += x
+        self.decalagey += y
         # for tile in self.tile_list:
         #     tile.get_rect().x += x
         #     tile.get_rect().y += y
 
-    def tree(self, col_count):
+    def tree(self, col_count, up):
         # tronc d'arbre
         for i in range(3):
-            tile = Block(self, col_count // 10, "log", col_count % 10 * TILE_SIZE,
-                         self.data[col_count] * (-TILE_SIZE) + 1000 - TILE_SIZE * (i + 1),
+            tile = Block(self, col_count // 10, "log", col_count % 10 * TILE_SIZE + self.dec,
+                         self.data[col_count] * (-TILE_SIZE) + up - TILE_SIZE * (i + 1),
                          self.log_img, 75, True)
-            self.tile_list.append(tile)
+            self.tile_list[str(col_count % 10 * TILE_SIZE + self.dec) + "_" +
+                           str(self.data[col_count] * (-TILE_SIZE) - TILE_SIZE * (i + 1)) + "_" + str(
+                col_count // 10)] = tile
         # leaves
         for j in range(-2, 3):
             # if not j == 0:
-            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * j,
-                         (self.data[col_count] + 4) * (-TILE_SIZE) + 1000, self.leaves_img, 25, True)
-            self.tile_list.append(tile)
-            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * j,
-                         (self.data[col_count] + 5) * (-TILE_SIZE) + 1000, self.leaves_img, 25, True)
-            self.tile_list.append(tile)
+            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * j + self.dec,
+                         (self.data[col_count] + 4) * (-TILE_SIZE) + up, self.leaves_img, 25, True)
+            self.tile_list[str(col_count % 10 * TILE_SIZE - TILE_SIZE * j + self.dec) + "_" +
+                           str((self.data[col_count] + 4) * (-TILE_SIZE)) + "_" + str(
+                col_count // 10)] = tile
+            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * j + self.dec,
+                         (self.data[col_count] + 5) * (-TILE_SIZE) + up, self.leaves_img, 25, True)
+            self.tile_list[str(col_count % 10 * TILE_SIZE - TILE_SIZE * j + self.dec) + "_" +
+                           str((self.data[col_count] + 5) * (-TILE_SIZE)) + "_" + str(
+                col_count // 10)] = tile
         for i in range(-1, 2):
-            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * i,
-                         (self.data[col_count] + 6) * (-TILE_SIZE) + 1000, self.leaves_img, 25, True)
-            self.tile_list.append(tile)
-        tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE,
-                     (self.data[col_count] + 7) * (-TILE_SIZE) + 1000, self.leaves_img, 25, True)
-        self.tile_list.append(tile)
+            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * i + self.dec,
+                         (self.data[col_count] + 6) * (-TILE_SIZE) + up, self.leaves_img, 25, True)
+            self.tile_list[str(col_count % 10 * TILE_SIZE - TILE_SIZE * i + self.dec) + "_" +
+                           str((self.data[col_count] + 6) * (-TILE_SIZE)) + "_" + str(
+                col_count // 10)] = tile
+        tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE + self.dec,
+                     (self.data[col_count] + 7) * (-TILE_SIZE) + up, self.leaves_img, 25, True)
+        self.tile_list[str(col_count % 10 * TILE_SIZE + self.dec) + "_" +
+                       str((self.data[col_count] + 7) * (-TILE_SIZE)) + "_" + str(col_count // 10)] = tile
         # dirt sous l'arbre
-        tile = Block(self, col_count // 10, "dirt", col_count % 10 * TILE_SIZE,
-                     self.data[col_count] * (-TILE_SIZE) + 1000, self.dirt_img, 50, True)
-        self.tile_list.append(tile)
+        tile = Block(self, col_count // 10, "dirt", col_count % 10 * TILE_SIZE + self.dec,
+                     self.data[col_count] * (-TILE_SIZE) + up, self.dirt_img, 50, True)
+        self.tile_list[str(col_count % 10 * TILE_SIZE + self.dec) + "_" +
+                       str(self.data[col_count] * (-TILE_SIZE)) + "_" + str(col_count // 10)] = tile

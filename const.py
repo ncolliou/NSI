@@ -6,7 +6,7 @@ TILE_SIZE = 60
 FPS = 60
 
 background_path_img = 'assets/background.jpg'
-player_path_img = 'assets/player.png'
+player_path_img = 'assets/player1.png'
 font_path = 'assets/font/VT323-Regular.ttf'
 
 grass_block_path_img = 'assets/blocks/grass_side.png'

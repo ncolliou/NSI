@@ -2,6 +2,7 @@ import pygame
 from const import SCREEN_WIDTH, SCREEN_HEIGHT, player_path_img, inventory_gui_path_img, hotbar_gui_path_img, \
     select_gui_path_img, TILE_SIZE
 from Slot import Slot
+from Block import Block
 
 
 class Player:
@@ -11,8 +12,11 @@ class Player:
 
     def __init__(self, game):
         self.game = game
+        self.image = pygame.transform.scale(pygame.image.load(player_path_img), (30, 120))
         # chargement de l'image
-        self.image = pygame.image.load(player_path_img)
+        self.imageL = pygame.transform.flip(self.image, False, False)
+        self.imageR = pygame.transform.flip(self.image, True, False)
+        self.image = self.imageL
         self.rect = self.image.get_rect()
         # position du joueur au debut
         self.rect.x = SCREEN_WIDTH // 2
@@ -48,9 +52,12 @@ class Player:
 
         for j in range(1, 3):
             for i in range(1, 3):
-                self.inventory["Slot" + str(i) + "_" + str(j)] = Slot(None, i, j, 0, "craft_small")
+                self.inventory["Slot" + str(i) + "_" + str(j) + "_Craft"] = Slot(None, i, j, 0, "craft_small")
+
+        self.inventory["Slot0_0_Craft"] = Slot(None, 0, 0, 0, "result_craft_small")
 
         self.move_items = [False, None, None]
+        self.decy = 0
 
     def update(self, screen):
         """
@@ -75,9 +82,11 @@ class Player:
             # deplacement sur la gauche
             if key[pygame.K_q]:
                 dx += self.velocity
+                self.image = self.imageR
             # deplacement sur la droite
             if key[pygame.K_d]:
                 dx -= self.velocity
+                self.image = self.imageL
 
         # gravite (ne pas chercher a comprendre sauf si vous voulez reflechir ;p), en vrai c'est simple
         self.vel_y += 1
@@ -87,42 +96,46 @@ class Player:
 
         # collision
         # self.in_air = True
-        for tile in self.game.visible_map:
-            if tile.have_hitbox:
+        for value in self.game.visible_map.values():
+            if value.have_hitbox:
                 # x direction
                 while pygame.rect.Rect(
-                        tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
-                        tile.get_rect().y,
-                        tile.get_rect().w,
-                        tile.get_rect().h) \
+                        value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
+                        value.get_rect().y * (-TILE_SIZE) + self.game.world.decalagey,
+                        value.get_rect().w,
+                        value.get_rect().h) \
                         .colliderect(self.rect.x - dx, self.rect.y, self.width, self.height):
                     if dx > 0:
                         dx -= 1
                     elif dx < 0:
                         dx += 1
                 # y direction
-                if pygame.rect.Rect(tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
-                                    tile.get_rect().y,
-                                    tile.get_rect().w,
-                                    tile.get_rect().h) \
+                if pygame.rect.Rect(value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
+                                    value.get_rect().y * (-TILE_SIZE) + self.game.world.decalagey,
+                                    value.get_rect().w,
+                                    value.get_rect().h) \
                         .colliderect(self.rect.x, self.rect.y - dy, self.width, self.height):
                     # en dessous du sol
                     if self.vel_y < 0:
-                        dy = self.rect.top - tile.get_rect().bottom
+                        dy = self.rect.top + value.get_rect().bottom - self.game.world.decalagey * TILE_SIZE
+                        print(self.rect.top)
+                        print(value.get_rect().bottom)
                         self.vel_y = 0
                     # au dessus du sol
                     elif self.vel_y >= 0:
-                        dy = self.rect.bottom - tile.get_rect().top
+                        dy = self.rect.bottom - value.get_rect().top * (-TILE_SIZE) - self.game.world.decalagey
+                        # print(self.rect.bottom, value.get_rect().top, self.game.world.decalagey)
                         self.vel_y = 0
                         self.in_air = False
 
         # update de la position
         self.game.x += dx
         self.game.y += dy
+        self.decy += dy
         self.game.world.cow.set_pos(self.game.world.cow.pos_x, self.game.world.cow.pos_y + dy)
-        self.game.world.update_position(dx)
-        for tile in self.game.world.tile_list:
-            tile.get_rect().y += dy
+        self.game.world.update_position(dx, dy)
+        # for tile in self.game.world.tile_list.values():
+        #     tile.get_rect().y += dy
 
         if self.game.open_inventory:
             for key, value in self.inventory.items():
@@ -139,12 +152,16 @@ class Player:
                                  0, self.move_items[1].where)
                         self.move_items = [False, None, None]
                         self.inventory_update(screen)
+        # for i in range(18):
+        #     for j in range(12):
+        #         # x = ((self.game.x - abs(self.game.x // TILE_SIZE) // 10 * TILE_SIZE * 10) // TILE_SIZE) * TILE_SIZE
+        #         y = TILE_SIZE
+        #         pygame.draw.rect(screen, (255, 255, 255), (i * TILE_SIZE, y*j, TILE_SIZE, TILE_SIZE), 2)
 
     def inventory_update(self, screen):
         """
         Update l'inventaire du joueur et affichage de celui ci
         """
-
         if self.game.open_inventory:
             for value in self.inventory.values():
                 value.draw_item(screen)
@@ -155,3 +172,21 @@ class Player:
             if value.pos_y == 540:
                 value.draw_item(screen, True)
                 value.draw_count(screen, True)
+
+    def get_item_hand(self):
+        if self.inventory["Slot" + str(self.game.hotbar_num) + "_4"].item is not None:
+            return self.inventory["Slot" + str(self.game.hotbar_num) + "_4"].item
+
+    def place_block(self, pos):
+        item = self.get_item_hand()
+        if item is not None:
+            x = ((pos[0] - self.game.x - (self.game.x // TILE_SIZE) // 10 * TILE_SIZE * 10) // TILE_SIZE)
+            y = (pos[1] // (-TILE_SIZE) + (self.game.world.decalagey // TILE_SIZE)) + 1
+            # print(self.game.world.decalagey % 10)
+            # chunk = (-1) * ((self.game.x + pos[0] // TILE_SIZE) // 10)
+            chunk = x // 10
+            x = x % 10
+            print((self.game.x // TILE_SIZE) // 10 * TILE_SIZE * 10)
+            print(x, y, chunk)
+            b = Block(self.game.world, chunk, item.name, x, y, item.image, 50, item.have_hitbox)
+            self.game.world.tile_list[str(x) + "_" + str(y) + "_" + str(chunk)] = b

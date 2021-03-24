@@ -21,11 +21,10 @@ class Game:
         # import de l'arriere plan
         self.background = pygame.image.load(background_path_img)
         # creation du joueur
-        self.seed = 100
+        self.seed = 40
         # self.seed = random.randint(1, 100)
         # affichage de la seed pour avoir la meme map par exemple
         print(self.seed)
-        self.player = Player(self)
         # initialisation de la map
         # random.randint(1, nbTotalDeMapsPossibleDansLaGenerationCustom), taille de la map
         # seed precise : 19 ou 93 sont speciales (19 sans better et 45 aussi est cool)
@@ -38,8 +37,9 @@ class Game:
         # creation du monde
         self.world.create_random()
         # liste qui contient tous les blocks visible sur l'ecran
-        self.visible_map = []
+        self.visible_map = {}
 
+        self.player = Player(self)
         # creation de boutons pour les menus
         self.play_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100, button_path_img, True)
         self.exit_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100, button_path_img, True)
@@ -182,14 +182,16 @@ class Game:
         Liste des blocks visible sur l'ecran
         """
         self.visible_map.clear()
-        for tile in self.world.tile_list:
+        for key, value in self.world.tile_list.items():
             if not (
-                    tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.world.decalagex > 1080
+                    value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.world.decalagex > 1080
                     or
-                    tile.get_rect().x + TILE_SIZE + tile.get_chunk() * 10 * TILE_SIZE + self.world.decalagex < 0
+                    value.get_rect().x * TILE_SIZE + TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.world.decalagex < 0
                     or
-                    tile.get_rect().y > 720 or tile.get_rect().y + TILE_SIZE < 0):
-                self.visible_map.append(tile)
+                    value.get_rect().y * (-TILE_SIZE) + self.world.decalagey > 720
+                    or
+                    value.get_rect().y * (-TILE_SIZE) + TILE_SIZE + self.world.decalagey < 0):
+                self.visible_map[str(key)] = value
 
     def draw_background(self, screen):
         """
@@ -198,13 +200,13 @@ class Game:
         screen.blit(self.background, (0, 0))
 
     def show_hitboxes(self, screen):
-        for tile in self.visible_map:
-            if tile.have_hitbox:
+        for value in self.visible_map.values():
+            if value.have_hitbox:
                 pygame.draw.rect(screen, (255, 255, 255),
-                                 (tile.get_rect().x + tile.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
-                                  tile.get_rect().y,
-                                  tile.get_rect().w,
-                                  tile.get_rect().h), 2)
+                                 (value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
+                                  value.get_rect().y * (-TILE_SIZE) + self.world.decalagey,
+                                  value.get_rect().w,
+                                  value.get_rect().h), 2)
         pygame.draw.rect(screen, (255, 255, 255), self.player.rect, 2)
 
     def key_write(self, event):
