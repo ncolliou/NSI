@@ -117,9 +117,11 @@ class Player:
                         .colliderect(self.rect.x, self.rect.y - dy, self.width, self.height):
                     # en dessous du sol
                     if self.vel_y < 0:
-                        dy = self.rect.top + value.get_rect().bottom - self.game.world.decalagey * TILE_SIZE
-                        print(self.rect.top)
-                        print(value.get_rect().bottom)
+                        # print("Hello there")
+                        # dy = self.rect.top + value.get_rect().bottom - self.game.world.decalagey * TILE_SIZE
+                        # print(self.rect.top)
+                        # print(value.get_rect().bottom)
+                        dy = 0
                         self.vel_y = 0
                     # au dessus du sol
                     elif self.vel_y >= 0:
@@ -172,6 +174,10 @@ class Player:
             if value.pos_y == 540:
                 value.draw_item(screen, True)
                 value.draw_count(screen, True)
+        pos = pygame.mouse.get_pos()
+        chunk = (pos[0] // TILE_SIZE // 10) - (self.game.x // TILE_SIZE // 10)
+        # print((chunk + pos[0] // TILE_SIZE) % 10)
+        # print(((((self.game.x // TILE_SIZE) + pos[0]) // TILE_SIZE) - self.game.x // TILE_SIZE) % 10, chunk)
 
     def get_item_hand(self):
         if self.inventory["Slot" + str(self.game.hotbar_num) + "_4"].item is not None:
@@ -180,13 +186,10 @@ class Player:
     def place_block(self, pos):
         item = self.get_item_hand()
         if item is not None:
-            x = ((pos[0] - self.game.x - (self.game.x // TILE_SIZE) // 10 * TILE_SIZE * 10) // TILE_SIZE)
+            # x = ((pos[0] - (self.game.x // TILE_SIZE) // 10 * TILE_SIZE * 10) // TILE_SIZE)
+            chunk = (pos[0] // TILE_SIZE // 10) - (self.game.x // TILE_SIZE // 10)
+            x = ((((self.game.x // TILE_SIZE) + pos[0]) // TILE_SIZE) - self.game.x // TILE_SIZE) % 10
             y = (pos[1] // (-TILE_SIZE) + (self.game.world.decalagey // TILE_SIZE)) + 1
-            # print(self.game.world.decalagey % 10)
-            # chunk = (-1) * ((self.game.x + pos[0] // TILE_SIZE) // 10)
-            chunk = x // 10
-            x = x % 10
-            print((self.game.x // TILE_SIZE) // 10 * TILE_SIZE * 10)
-            print(x, y, chunk)
+            print("Pos :", x, y, chunk)
             b = Block(self.game.world, chunk, item.name, x, y, item.image, 50, item.have_hitbox)
             self.game.world.tile_list[str(x) + "_" + str(y) + "_" + str(chunk)] = b

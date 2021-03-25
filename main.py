@@ -109,7 +109,8 @@ while game.running:
                             game.player.inventory["Slot1_1_Craft"].item is None and \
                             game.player.inventory["Slot1_2_Craft"].item is None and \
                             game.player.inventory["Slot2_1_Craft"].item is None and \
-                            game.player.inventory["Slot2_2_Craft"].item is None:
+                            game.player.inventory["Slot2_2_Craft"].item is None and \
+                            game.player.inventory["Slot0_0_Craft"].item is None:
                         game.open_inventory = False
 
                 if event.key == pygame.K_1 and game.hotbar_num != 1:
