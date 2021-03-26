@@ -1,0 +1,14 @@
+{
+  "pattern": [
+    "#"
+  ],
+  "key": {
+    "#": {
+      "item": "log"
+    }
+  },
+  "result": {
+    "item": "planks",
+    "count": 4
+  }
+}

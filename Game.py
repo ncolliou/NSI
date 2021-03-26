@@ -73,7 +73,7 @@ class Game:
 
         # sounds
         self.soundManager = SoundManager()
-        self.soundManager.play('music', -1)
+        # self.soundManager.play('music', -1)
 
         self.user_text = ''
 

@@ -3,6 +3,7 @@ from const import SCREEN_WIDTH, SCREEN_HEIGHT, player_path_img, inventory_gui_pa
     select_gui_path_img, TILE_SIZE
 from Slot import Slot
 from Block import Block
+from Craft import Craft
 
 
 class Player:
@@ -58,6 +59,9 @@ class Player:
 
         self.move_items = [False, None, None]
         self.decy = 0
+
+        self.crafts = {}
+        self.init_crafts()
 
     def update(self, screen):
         """
@@ -174,8 +178,8 @@ class Player:
             if value.pos_y == 540:
                 value.draw_item(screen, True)
                 value.draw_count(screen, True)
-        pos = pygame.mouse.get_pos()
-        chunk = (pos[0] // TILE_SIZE // 10) - (self.game.x // TILE_SIZE // 10)
+        # pos = pygame.mouse.get_pos()
+        # chunk = (pos[0] // TILE_SIZE // 10) - (self.game.x // TILE_SIZE // 10)
         # print((chunk + pos[0] // TILE_SIZE) % 10)
         # print(((((self.game.x // TILE_SIZE) + pos[0]) // TILE_SIZE) - self.game.x // TILE_SIZE) % 10, chunk)
 
@@ -193,3 +197,6 @@ class Player:
             print("Pos :", x, y, chunk)
             b = Block(self.game.world, chunk, item.name, x, y, item.image, 50, item.have_hitbox)
             self.game.world.tile_list[str(x) + "_" + str(y) + "_" + str(chunk)] = b
+
+    def init_crafts(self):
+        self.crafts["planks"] = Craft(self, "assets/data/recipes/planks.json")

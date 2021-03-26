@@ -64,7 +64,7 @@ class World:
                 t = 0
                 pass
                 # initialisation d'un arbre
-                # self.tree(col_count, up)
+                self.tree(col_count, up)
             # le block du dessus est de la grass
             else:
                 t += 1
@@ -135,44 +135,28 @@ class World:
         """
         self.decalagex += x
         self.decalagey += y
-        # for tile in self.tile_list:
-        #     tile.get_rect().x += x
-        #     tile.get_rect().y += y
 
     def tree(self, col_count, up):
-        # tronc d'arbre
-        for i in range(3):
-            tile = Block(self, col_count // 10, "log", col_count % 10 * TILE_SIZE + self.dec,
-                         self.data[col_count] * (-TILE_SIZE) + up - TILE_SIZE * (i + 1),
-                         self.log_img, 75, True)
-            self.tile_list[str(col_count % 10 * TILE_SIZE + self.dec) + "_" +
-                           str(self.data[col_count] * (-TILE_SIZE) - TILE_SIZE * (i + 1)) + "_" + str(
-                col_count // 10)] = tile
-        # leaves
-        for j in range(-2, 3):
-            # if not j == 0:
-            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * j + self.dec,
-                         (self.data[col_count] + 4) * (-TILE_SIZE) + up, self.leaves_img, 25, True)
-            self.tile_list[str(col_count % 10 * TILE_SIZE - TILE_SIZE * j + self.dec) + "_" +
-                           str((self.data[col_count] + 4) * (-TILE_SIZE)) + "_" + str(
-                col_count // 10)] = tile
-            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * j + self.dec,
-                         (self.data[col_count] + 5) * (-TILE_SIZE) + up, self.leaves_img, 25, True)
-            self.tile_list[str(col_count % 10 * TILE_SIZE - TILE_SIZE * j + self.dec) + "_" +
-                           str((self.data[col_count] + 5) * (-TILE_SIZE)) + "_" + str(
-                col_count // 10)] = tile
+        tile = Block(self, (self.dec + col_count) // 10, "dirt", col_count % 10,
+                     self.data[col_count] + up, self.dirt_img, 50, True)
+        self.tile_list[str(col_count % 10) + "_" + str(self.data[col_count]) + "_" + str((self.dec + col_count) // 10)] = tile
+        for i in range(2, 5):
+            tile = Block(self, (self.dec + col_count) // 10, "log", col_count % 10,
+                         self.data[col_count] + up - 1 + 1 * i, self.log_img, 75, True)
+            self.tile_list[str(col_count % 10) + "_" + str(self.data[col_count] - 1 + 1 * i) + "_" + str((self.dec + col_count) // 10)] = tile
+        for i in range(-2, 3):
+            for j in range(0, 2):
+                tile = Block(self, (self.dec + col_count + i) // 10, "leaves", (col_count + i) % 10,
+                             self.data[col_count] + up + 4 + 1 * j, self.leaves_img, 25, True)
+                self.tile_list[str((col_count + i) % 10) + "_" + str(self.data[col_count] + 4 + 1 * j) + "_" + str((self.dec + col_count + i) // 10)] = tile
+
         for i in range(-1, 2):
-            tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE - TILE_SIZE * i + self.dec,
-                         (self.data[col_count] + 6) * (-TILE_SIZE) + up, self.leaves_img, 25, True)
-            self.tile_list[str(col_count % 10 * TILE_SIZE - TILE_SIZE * i + self.dec) + "_" +
-                           str((self.data[col_count] + 6) * (-TILE_SIZE)) + "_" + str(
-                col_count // 10)] = tile
-        tile = Block(self, col_count // 10, "leaves", col_count % 10 * TILE_SIZE + self.dec,
-                     (self.data[col_count] + 7) * (-TILE_SIZE) + up, self.leaves_img, 25, True)
-        self.tile_list[str(col_count % 10 * TILE_SIZE + self.dec) + "_" +
-                       str((self.data[col_count] + 7) * (-TILE_SIZE)) + "_" + str(col_count // 10)] = tile
-        # dirt sous l'arbre
-        tile = Block(self, col_count // 10, "dirt", col_count % 10 * TILE_SIZE + self.dec,
-                     self.data[col_count] * (-TILE_SIZE) + up, self.dirt_img, 50, True)
-        self.tile_list[str(col_count % 10 * TILE_SIZE + self.dec) + "_" +
-                       str(self.data[col_count] * (-TILE_SIZE)) + "_" + str(col_count // 10)] = tile
+            tile = Block(self, (self.dec + col_count + i) // 10, "leaves", (col_count + i) % 10,
+                         self.data[col_count] + up + 6, self.leaves_img, 25, True)
+            self.tile_list[str((col_count + i) % 10) + "_" + str(self.data[col_count] + 6) + "_" + str(
+                (self.dec + col_count + i) // 10)] = tile
+
+        tile = Block(self, (self.dec + col_count) // 10, "leaves", col_count % 10,
+                     self.data[col_count] + up + 7, self.leaves_img, 25, True)
+        self.tile_list[str(col_count % 10) + "_" + str(self.data[col_count] + 7) + "_" + str(
+            (self.dec + col_count) // 10)] = tile

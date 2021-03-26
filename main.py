@@ -42,13 +42,6 @@ while game.running:
         else:
             game.player.dont_play = False
 
-        # if game.player.inventory["Slot1_1_Craft"].item is not None:
-        #     print(game.player.inventory["Slot1_1_Craft"].item.name)
-        if game.player.inventory["Slot1_1_Craft"].item is not None:
-            if game.player.inventory["Slot1_1_Craft"].item.name == "log":
-                game.player.inventory["Slot0_0_Craft"].item = Item(game.world, "log", game.world.blocks_img["log"], True)
-                game.player.inventory["Slot0_0_Craft"].count = 4
-
     elif game.actual == "pause":
         game.draw_background(screen)
         game.update_pause(screen)
