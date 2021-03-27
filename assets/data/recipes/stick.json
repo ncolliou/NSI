@@ -1,0 +1,15 @@
+{
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "key": {
+    "#": {
+      "item": "planks"
+    }
+  },
+  "result": {
+    "item": "stick",
+    "count": 4
+  }
+}

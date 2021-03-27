@@ -12,7 +12,7 @@ class Block:
         """
         Constructor d'un block
         :param world: World.World --> monde auquel appartient le block
-        :param chunk: liste de block
+        :param chunk: Int --> position du block dans le monde dans un chunk (10xhauteur du monde)
         :param name: Str --> nom / id du block
         :param x: Int --> position x
         :param y: Int --> position y
@@ -24,7 +24,7 @@ class Block:
         self.chunk = chunk
         # print(chunk)
         self.name = name
-        # verification que l'image fait bien TILE_SIZE² (60x60)
+        # change la taille de l'image => TILE_SIZE² (60x60)
         self.image = pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -33,6 +33,7 @@ class Block:
         self.timer = 0
         # resistance du block (temps de cassage) -1 -> block incassable
         self.hardness = hardness
+        # collision avec ce block ?
         self.have_hitbox = have_hitbox
 
     def set_image(self, image):
@@ -69,57 +70,32 @@ class Block:
         """
         Method qui permet de detruire les blocks (meilleur nom a trouve)
         """
-        # print(251 % 10 * TILE_SIZE + self.world.dec,
-        #       self.world.data[251] * (-TILE_SIZE) + 1000)
-        # print(self.world.tile_list["-14940_1600_25"].get_pos())
         # recuperation de la position de la souris
         pos = pygame.mouse.get_pos()
         # si la souris est sur le block
         if pygame.mouse.get_pressed(3)[0] == 1:
             # si le bouton gauche de la souris est appuyer et que le temps ou il est appuyer est < self.hardness
             # (temps de cassage)
-            # print(self.get_rect().x * TILE_SIZE + self.get_chunk() * 10 * TILE_SIZE + self.world.decalagex)
             if pygame.rect.Rect(self.get_rect().x * TILE_SIZE + self.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
-                                self.get_rect().y * (-TILE_SIZE) + self.world.decalagey, self.get_rect().w, self.get_rect().h).collidepoint(pos) and\
+                                self.get_rect().y * (-TILE_SIZE) + self.world.decalagey,
+                                self.get_rect().w, self.get_rect().h).collidepoint(pos) and \
                     self.timer < self.hardness:
-                # augmentation du temps ou il est appuyer
+                # le block est en train d'etre casse
                 self.timer += 1
             # si le temps ou il est maintenu est egal au temps de cassage (le block se casse)
             if self.timer == self.hardness:
-                # print(self.world.tile_list)
-                # pour chaque block dans le monde
-                # (optimisation possible ? [faire ca uniquement pour les blocks dans l'ecran])
-                # print(self.get_pos())
-                # print(self.world.game.visible_map)
-                # for key, value in self.world.game.visible_map.items():
-                #     print(key, value.get_pos(), value.name)
+                # recuperation de la cle du block
                 key = str(self.get_pos()[0]) + "_" + str(self.get_pos()[1] - self.world.game.y + self.world.decalagey) + "_" + str(self.get_pos()[2])
+                # ajout dans l'inventaire
                 self.drop()
-                print(key)
-                self.update_grass(self.get_block_above(
-                            self.world.tile_list[key].rect.x + self.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
-                            self.world.tile_list[key].rect.y + TILE_SIZE))
+                # recuperation de la cle du block en dessous
+                block_below = str(self.get_pos()[0]) + "_" + str(self.get_pos()[1] - self.world.game.y + self.world.decalagey - 1) + "_" + str(self.get_pos()[2])
+                # s il existe un block en dessous de celui qui vient d etre casse
+                if block_below in self.world.tile_list:
+                    # update du block si c'est de la terre
+                    self.update_grass(self.world.tile_list[block_below])
+                # suppression du block dans le monde
                 del (self.world.tile_list[key])
-                # self.update_grass(self.get_block_above(
-                #             self.world.tile_list[i].rect.x + self.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
-                #             self.world.tile_list[i].rect.y + TILE_SIZE))
-                # for i in range(len(self.world.tile_list)):
-                #     # si la position du block est egale a la position de la souris
-                #     if self.world.tile_list[i].get_rect().x + self.world.tile_list[
-                #         i].get_chunk() * 10 * TILE_SIZE + self.world.decalagex == self.get_pos()[
-                #         0] + self.get_chunk() * 10 * TILE_SIZE + self.world.decalagex and self.world.tile_list[
-                #         i].get_rect().y == self.get_pos()[1] and \
-                #             self.world.tile_list[i].get_chunk() == self.get_pos()[2]:
-                #         # recuperation du block sous le block qui vient d'etre casse
-                #         # si c'est de la dirt -> transformation en grass
-                #         self.update_grass(self.get_block_above(
-                #             self.world.tile_list[i].rect.x + self.get_chunk() * 10 * TILE_SIZE + self.world.decalagex,
-                #             self.world.tile_list[i].rect.y + TILE_SIZE))
-                #         # ajout du block dans l'inventaire du joueur
-                #         self.drop()
-                #         # suppression du block
-                #         self.world.tile_list.pop(i)
-                #         break
         # si le bouton gauche de la souris est relache ou
         # que la souris n'est plus sur le block => reinitialisation du compteur
         if pygame.mouse.get_pressed(3)[0] == 0 or not pygame.rect.Rect(
@@ -129,32 +105,24 @@ class Block:
                 self.get_rect().h).collidepoint(pos):
             self.timer = 0
 
-    def get_block_above(self, x, y):
-        """
-        Method qui renvoie le block aux coordonnees x, y
-        Flemme d'expliquer la methode parce que bon voila...
-        """
-        for value in self.world.game.visible_map.values():
-            if value.rect.x + value.get_chunk() * 10 * TILE_SIZE + self.world.decalagex == x and value.rect.y == y:
-                return value
-
     def update_grass(self, tile):
         """
-        Method qui transforme de la dirt en grass s'il n'y a pas de block au dessus
+        Method qui transforme de la dirt en grass s il n'y a pas de block au dessus
         """
-        # si tile n'est pas un block -> renvoie rien
-        if not type(tile) == Block:
-            return
         # si c'est de la dirt
         if tile.name == "dirt":
             # transformation de la dirt en grass (nom et image changent)
             tile.set_name("grass")
             tile.set_image(self.world.grass_img)
+        # sinon on ne fait rien
+        else:
+            return
 
     def drop(self):
         """
         Ajoute un block a l'inventaire du joueur
         """
+        # recuperation du 1er slot vide dans l inventaire ou s il y a deja le meme block dans l inventaire
         for key, value in self.world.game.player.inventory.items():
             if value.item is not None and value.item.name == self.name:
                 self.world.game.player.inventory[key].count += 1

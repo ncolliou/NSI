@@ -6,19 +6,18 @@ from Player import Player
 from Sound import SoundManager
 from World import World
 from Button import Button
-from const import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE, background_path_img, \
-    button_path_img
+from const import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE, background_path_img, button_path_img
 from aleatoire import generate_map
 
 
 class Game:
     """
     Class qui initialise le jeu
-    (A faire le joueur devrai apparaitre sur le block le plus haut pas dans les airs)
+    (A faire le joueur devrait apparaitre sur le block le plus haut pas dans les airs)
     """
 
     def __init__(self):
-        # import de l'arriere plan
+        # import de l arriere plan
         self.background = pygame.image.load(background_path_img)
         # creation du joueur
         self.seed = 40
@@ -27,8 +26,6 @@ class Game:
         print(self.seed)
         # initialisation de la map
         # random.randint(1, nbTotalDeMapsPossibleDansLaGenerationCustom), taille de la map
-        # seed precise : 19 ou 93 sont speciales (19 sans better et 45 aussi est cool)
-        # A voir absolument 31 et 77
         # self.map = generate_map(63, 500)
         self.map = generate_map(self.seed, 500)
         # initialisation du monde
@@ -36,7 +33,7 @@ class Game:
 
         # creation du monde
         self.world.create_random()
-        # liste qui contient tous les blocks visible sur l'ecran
+        # dictionnaire qui contient tous les blocks visible sur l'ecran
         self.visible_map = {}
 
         self.player = Player(self)
@@ -56,7 +53,7 @@ class Game:
         self.x = 0
         self.y = 0
 
-        # meilleur nom de variable a trouver XD
+        # meilleur nom de variable a trouver
         self.actual = "menu"
 
         # affichages
@@ -68,8 +65,8 @@ class Game:
         # inventaire
         self.inventory = []
 
+        # emplacement du slot selectionne dans la hotbar
         self.hotbar_num = 1
-        self.position = None
 
         # sounds
         self.soundManager = SoundManager()
@@ -103,6 +100,7 @@ class Game:
         # afficher le joueur
         screen.blit(self.player.image, self.player.rect)
         self.set_visible_map()
+        # affichage de l emplacement du slot selectionne
         self.player.select_hotbar_rect.x = 302 + 53 * (self.hotbar_num - 1)
         self.player.select_hotbar_rect.y = 661
         screen.blit(self.player.select_hotbar, self.player.select_hotbar_rect)
@@ -200,6 +198,9 @@ class Game:
         screen.blit(self.background, (0, 0))
 
     def show_hitboxes(self, screen):
+        """
+        Affiche les hitboxs
+        """
         for value in self.visible_map.values():
             if value.have_hitbox:
                 pygame.draw.rect(screen, (255, 255, 255),
@@ -210,6 +211,9 @@ class Game:
         pygame.draw.rect(screen, (255, 255, 255), self.player.rect, 2)
 
     def key_write(self, event):
+        """
+        Fonction qui permet d ecrire certaines choses
+        """
         if self.active:
             if event.key == pygame.K_BACKSPACE:
                 self.volume_back_music = self.volume_back_music[:-1]

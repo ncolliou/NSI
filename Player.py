@@ -114,10 +114,11 @@ class Player:
                     elif dx < 0:
                         dx += 1
                 # y direction
-                if pygame.rect.Rect(value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
-                                    value.get_rect().y * (-TILE_SIZE) + self.game.world.decalagey,
-                                    value.get_rect().w,
-                                    value.get_rect().h) \
+                if pygame.rect.Rect(
+                        value.get_rect().x * TILE_SIZE + value.get_chunk() * 10 * TILE_SIZE + self.game.world.decalagex,
+                        value.get_rect().y * (-TILE_SIZE) + self.game.world.decalagey,
+                        value.get_rect().w,
+                        value.get_rect().h) \
                         .colliderect(self.rect.x, self.rect.y - dy, self.width, self.height):
                     # en dessous du sol
                     if self.vel_y < 0:
@@ -140,8 +141,6 @@ class Player:
         self.decy += dy
         self.game.world.cow.set_pos(self.game.world.cow.pos_x, self.game.world.cow.pos_y + dy)
         self.game.world.update_position(dx, dy)
-        # for tile in self.game.world.tile_list.values():
-        #     tile.get_rect().y += dy
 
         if self.game.open_inventory:
             for key, value in self.inventory.items():
@@ -149,7 +148,20 @@ class Player:
                     if value.item:
                         if not self.move_items[0]:
                             self.move_items = [True, value, key]
-                    if value.item is None and self.move_items[0]:
+                    if value.item is None and self.move_items[0] and self.move_items[2] == "Slot0_0_Craft":
+                        value.item = self.move_items[1].item
+                        value.count = self.move_items[1].count
+                        self.inventory[self.move_items[2]] = Slot(None, int(self.move_items[2][4]),
+                                                                  int(self.move_items[2][6]),
+                                                                  0, self.move_items[1].where)
+                        self.move_items = [False, None, None]
+                        self.inventory_update(screen)
+                        self.crafts["planks"].use_slot.count -= 1
+                        if self.crafts["planks"].use_slot.count <= 0:
+                            self.crafts["planks"].use_slot.item = None
+                            self.crafts["planks"].use_slot.count = 0
+
+                    if value.item is None and self.move_items[0] and key != "Slot0_0_Craft":
                         value.item = self.move_items[1].item
                         value.count = self.move_items[1].count
                         self.inventory[self.move_items[2]] = \
@@ -158,11 +170,8 @@ class Player:
                                  0, self.move_items[1].where)
                         self.move_items = [False, None, None]
                         self.inventory_update(screen)
-        # for i in range(18):
-        #     for j in range(12):
-        #         # x = ((self.game.x - abs(self.game.x // TILE_SIZE) // 10 * TILE_SIZE * 10) // TILE_SIZE) * TILE_SIZE
-        #         y = TILE_SIZE
-        #         pygame.draw.rect(screen, (255, 255, 255), (i * TILE_SIZE, y*j, TILE_SIZE, TILE_SIZE), 2)
+        if self.game.open_inventory:
+            self.crafts["planks"].show_result()
 
     def inventory_update(self, screen):
         """
@@ -178,10 +187,6 @@ class Player:
             if value.pos_y == 540:
                 value.draw_item(screen, True)
                 value.draw_count(screen, True)
-        # pos = pygame.mouse.get_pos()
-        # chunk = (pos[0] // TILE_SIZE // 10) - (self.game.x // TILE_SIZE // 10)
-        # print((chunk + pos[0] // TILE_SIZE) % 10)
-        # print(((((self.game.x // TILE_SIZE) + pos[0]) // TILE_SIZE) - self.game.x // TILE_SIZE) % 10, chunk)
 
     def get_item_hand(self):
         if self.inventory["Slot" + str(self.game.hotbar_num) + "_4"].item is not None:
@@ -190,11 +195,9 @@ class Player:
     def place_block(self, pos):
         item = self.get_item_hand()
         if item is not None:
-            # x = ((pos[0] - (self.game.x // TILE_SIZE) // 10 * TILE_SIZE * 10) // TILE_SIZE)
             chunk = (pos[0] // TILE_SIZE // 10) - (self.game.x // TILE_SIZE // 10)
-            x = ((((self.game.x // TILE_SIZE) + pos[0]) // TILE_SIZE) - self.game.x // TILE_SIZE) % 10
+            x = (pos[0] // TILE_SIZE % 10) - (self.game.x // TILE_SIZE % 10)
             y = (pos[1] // (-TILE_SIZE) + (self.game.world.decalagey // TILE_SIZE)) + 1
-            print("Pos :", x, y, chunk)
             b = Block(self.game.world, chunk, item.name, x, y, item.image, 50, item.have_hitbox)
             self.game.world.tile_list[str(x) + "_" + str(y) + "_" + str(chunk)] = b
 

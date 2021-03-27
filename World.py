@@ -3,7 +3,7 @@ from aleatoire import random_number_int
 from Block import Block
 from const import TILE_SIZE, \
     grass_block_path_img, dirt_block_path_img, stone_block_path_img, log_block_path_img, leaves_block_path_img, \
-    bedrock_block_path_img, tallgrass_block_path_img, coal_block_path_img, cow_path_img
+    bedrock_block_path_img, tallgrass_block_path_img, coal_block_path_img, planks_block_path_img, cow_path_img
 from Entity import Entity
 from Text import Text
 
@@ -27,6 +27,7 @@ class World:
         self.bedrock_img = pygame.image.load(bedrock_block_path_img)
         self.tallgrass_img = pygame.image.load(tallgrass_block_path_img)
         self.coal_img = pygame.image.load(coal_block_path_img)
+        self.planks_img = pygame.image.load(planks_block_path_img)
         # utiliser dans l'inventaire et la hotbar
         self.blocks_img = {
             "dirt": pygame.transform.scale(self.dirt_img, (39, 39)),
@@ -35,7 +36,8 @@ class World:
             "log": pygame.transform.scale(self.log_img, (39, 39)),
             "leaves": pygame.transform.scale(self.leaves_img, (39, 39)),
             "tallgrass": pygame.transform.scale(self.tallgrass_img, (39, 39)),
-            "coal": pygame.transform.scale(self.coal_img, (39, 39))
+            "coal": pygame.transform.scale(self.coal_img, (39, 39)),
+            "planks": pygame.transform.scale(self.planks_img, (39, 39))
         }
         self.decalagex = 0
         self.decalagey = 0

@@ -41,4 +41,3 @@ def random_number_int(luck):
         return True
     else:
         return False
-

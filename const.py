@@ -17,6 +17,7 @@ leaves_block_path_img = 'assets/blocks/leaves_oak.png'
 bedrock_block_path_img = 'assets/blocks/bedrock.png'
 tallgrass_block_path_img = 'assets/blocks/tallgrass.png'
 coal_block_path_img = 'assets/blocks/coal_ore.png'
+planks_block_path_img = 'assets/blocks/oak_planks.png'
 
 cow_path_img = 'assets/entity/cow.png'
 

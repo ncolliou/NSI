@@ -8,6 +8,7 @@ class Button:
     def __init__(self, x, y, image_path, center=False):
         self.image = pygame.image.load(image_path)
         self.rect = self.image.get_rect()
+        # centrage du bouton
         if not center:
             self.rect.x = x
             self.rect.y = y

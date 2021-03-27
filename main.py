@@ -71,7 +71,8 @@ while game.running:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 3:
-                game.player.place_block(event.pos)
+                if not game.player.dont_play:
+                    game.player.place_block(event.pos)
             if game.input_rect.collidepoint(event.pos):
                 if game.active:
                     game.active = False
